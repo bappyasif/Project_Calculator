@@ -1,13 +1,572 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Calculator</title>
+    <style>
+        :root {
+            --grid-cols: 3;
+            --grid-rows: 3;
+            --op-rows: 4;
+            --op-cols: 1;
+        }
+
+        .calc_numpad {
+            display: grid;
+            grid-gap: 2px;
+            grid-template-columns: repeat(var(--grid-cols), 56px);
+            grid-template-rows: repeat(var(--grid-rows), 56px);
+            justify-items: center;
+            /* justify-self: center; */
+            /* background-color: darkturquoise; */
+            /* column-gap: 1.1px;
+            row-gap: 1.1px; */
+        }
+
+        /* .op_numpad {
+            display: grid;
+            grid-gap: 2px;
+            grid-template-columns: 110px 56px 110px;
+            grid-template-rows: 47px, auto 47px;
+        } */
+        #calc_operators {
+            display: grid;
+            /* grid-gap: 2px; */
+            /* column-gap: 2px; */
+            row-gap: 2px;
+            grid-template-columns: 56px;
+            grid-template-rows: 56px;
+            /* grid-template-columns: 110px 56px 110px;
+            grid-template-rows: 47px, auto 47px; */
+            justify-items: center;
+            /* background-color: darkgoldenrod; */
+        }
+
+        .calc_keys {
+            display: flex;
+            justify-content: center;
+        }
+
+        .calc_extra {
+            font-size: 1.1em;
+        }
+
+        .calc_item {
+            /* flex-grow: 4; */
+            align-self: center;
+            border: 11px solid darkturquoise;
+            /* background-color: darkturquoise; */
+        }
+
+        .op_item {
+            align-self: center;
+            border: 11px solid darkgoldenrod;
+            /* background-color: darkgoldenrod; */
+        }
+
+        /* .calc_screen {
+            display: block;
+            width: fit-content;
+            width: max-content;
+        } */
+        /* .calc_input {
+            display: block;
+            width: 400px;
+        } */
+        input {
+            width: 220px;
+            background-color: inherit;
+        }
+
+        /* #container {
+            text-align: center;
+            align-items: center;
+        } */
+        body {
+            text-align: center;
+            background-color: honeydew;
+        }
+    </style>
 </head>
+
 <body>
     <div id="container">
         <header>Use Calculator</header>
+        <div class="calc_screen">
+            <div class="calc_input">
+                <input type="text" placeholder="Enter your expression here">
+            </div>
+            <div class="calc_keys">
+                <div class="calc_numpad"></div>
+                <div id="calc_operators"></div>
+            </div>
+            <!-- <div class="calc_extra">
+                <div class="num_zero">0</div>
+                <div class="num_dec">.</div>
+            </div> -->
+        </div>
     </div>
+
+    <script>
+        let numpad = document.querySelector(".calc_numpad");
+        let operators = document.querySelector("#calc_operators");
+        let input_exp = document.querySelector("input");
+        let calc_keys = document.querySelector(".calc_keys");
+        let num_zero, num_dec, eq_sign;
+        function makingGridForNumpads(rows, cols) {
+            numpad.style.setProperty("--grid:cols", cols);
+            numpad.style.setProperty("--grid:rows", rows);
+            for (let i = 1; i <= rows * cols; i++) {
+                let key_cell = document.createElement("div");
+                key_cell.textContent = i;
+                key_cell.value = i;
+                numpad.appendChild(key_cell);
+                numpad.appendChild(key_cell).classList.add("calc_item");
+
+                key_cell.addEventListener("click", keypadPressed);
+
+                // key_cell.addEventListener("click", calculateExpression);
+
+                // key_cell.addEventListener("click", (ev) => {
+                //     console.log(ev.target.value);
+                // });
+            }
+            num_zero = document.createElement("div");
+            num_zero.textContent = "0";
+            num_dec = document.createElement("div");
+            num_dec.textContent = ".";
+            eq_sign = document.createElement("div");
+            eq_sign.textContent = "=";
+            // num_dec.style.paddingLeft = "9px";
+            // num_dec.style.paddingBottom = "11px";
+            // num_dec.style.marginBottom = "11px";
+            // num_dec.style.marginLeft = "4px";
+            // numpad.appendChild(num_zero).classList.add("calc_extra","calc_item");
+            // numpad.appendChild(num_dec).classList.add("calc_extra", "calc_item");
+            numpad.appendChild(num_zero).classList.add("calc_item");
+            numpad.appendChild(num_dec).classList.add("calc_item");
+            numpad.appendChild(eq_sign).classList.add("calc_item");
+
+            // //
+            // eq_sign.addEventListener("click", () => console.log(calculations));
+        }
+
+        let eq_btn = document.createElement("button");
+        eq_btn.textContent = "====";
+        // numpad.appendChild(eq_btn);
+        // numpad.after(eq_btn);
+        calc_keys.after(eq_btn);
+        // expr.push(calculations);
+
+        eq_btn.addEventListener("click", () => {
+            // console.log(calculations);
+            if (expr[expr.length - 1] !== -1) {
+                expr.push(calculations);
+                // input_exp.value = expr[expr.length - 1];
+                input_exp.value = calculations;
+            } else {
+                input_exp.value = "";
+            }
+        });
+
+        function makingGridForOperators(rows, cols) {
+            operators.style.setProperty("--op:rows", rows);
+            operators.style.setProperty("--op:cols", cols);
+            for (let i = 0; i < rows * cols; i++) {
+                let op_cell = document.createElement("div");
+                if (i === 0) {
+                    op_cell.textContent = "+";
+                    op_cell.value = "+";
+                    // op_cell.style.paddingTop = "4px";
+                } else if (i === 1) {
+                    op_cell.textContent = "-";
+                    op_cell.value = "-";
+                    op_cell.style.marginTop = "2px";
+                    op_cell.style.fontSize = "16px";
+                } else if (i === 2) {
+                    op_cell.textContent = "*";
+                    op_cell.value = "*";
+                    op_cell.style.marginTop = "11px";
+                } else if (i === 3) {
+                    op_cell.textContent = "/";
+                    op_cell.value = "/";
+                    op_cell.style.marginTop = "2px";
+                } else if (i === 4) {
+                    op_cell.textContent = "=";
+                    op_cell.value = "=";
+                    op_cell.style.marginTop = "2px";
+                }
+                operators.appendChild(op_cell).classList.add("op_item");
+                op_cell.addEventListener("click", keypadPressed);
+
+                // op_cell.addEventListener("click", calculateExpression);
+            }
+        }
+        let expr = [];
+        let expr1 = [];
+        // let expr2 = [];
+        let calculations;
+        function keypadPressed(ev) {
+            // let expr = input_exp.value, num1, num2;
+            let num1, num2;
+
+            if (typeof (ev.target.value) === "number") {
+                input_exp.value += ev.target.value;
+                num1 = input_exp.value;
+                expr1.push(num1);
+
+            } else if (["+", "-", "*", "/", "="].includes(ev.target.value)) {
+                // expr = [];
+                // expr.push(input_exp.value);
+                input_exp.value = "";
+
+                num2 = Math.max.apply(Math, expr1);
+                console.log(num2, typeof (num2), "else if", ev.target.value);
+
+                expr.push(num2);
+                // expr1 = [];
+
+                calculations = numberOperations(ev.target.value);
+
+                // input_exp.textContent = calculations;
+                // input_exp.value = calculations;
+            }
+        }
+        //  console.log(expr);
+        function numberOperations(op) {
+            input_exp.value = "";
+            let calc;
+            if (expr.length === 2) {
+                return justCalculation(op, calc)
+            } else {
+                console.log("else block")
+                calc = expr[0];
+                // input_exp.value = "";
+                input_exp.textContent = "";
+                // calc = justCalculation(op, calc);
+                console.log("out of else block")
+                return calc;
+            }
+        }
+
+        function justCalculation(op, calc) {
+            if (op === "+") {
+                calc = expr[0] + expr[1];
+                expr = [];
+                return calc;
+            } else if (op === "-") {
+                calc = expr[0] - expr[1];
+                expr = [];
+                return calc;
+            } else if (op === "*") {
+                calc = expr[0] * expr[1]
+                expr = [];
+                return calc;
+            } else if (op === "/") {
+                calc = expr[0] / expr[1]
+                expr = [];
+                // input_exp.value = expr[0] / expr[1];
+                return calc;
+            }
+        }
+
+        function calcAdd(arr) {
+            arr = input_exp.value.split("+");
+            console.log(arr.reduce((a, b) => +a + +b));
+        }
+
+        function calculateExpression(ev) {
+            // input_exp.value += ev.target.value;
+            // console.log(input_exp.value, typeof (input_exp.value));
+            // let ex_arr = input_exp.value.split("+");
+            let ex_arr;
+
+            if (typeof(ev.target.value) === "number") {
+                // if (input_exp.value.includes("+")) {
+                //     calcAdd();
+                // }
+                input_exp.value += ev.target.value;
+                console.log(input_exp.value, typeof (input_exp.value));
+            } else {
+                ex_arr = input_exp.value.split("+");
+                calcAdd(ex_arr);
+            }
+
+            // if (!input_exp.value.includes("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")) {
+            //     if (input_exp.value.includes("+")) {
+            //         calcAdd();
+            //     }
+            // }
+
+            // let ex_arr;
+            // console.log(ex_arr);
+            // if (ex_arr.length > 1) {
+            //     calcAdd(ex_arr);
+            //     // if (input_exp.value.includes("+")) {
+            //     //     ex_arr = input_exp.value.split("+");
+            //     //     console.log(ex_arr.reduce((a, b) => +a + +b));
+            //     // }
+            // }
+        }
+
+        makingGridForNumpads(3, 3);
+        makingGridForOperators(4, 1);
+        // console.log(expr);
+    </script>
 </body>
+
 </html>
+
+<!--
+    function numberOperations(op) {
+            input_exp.value = "";
+            let calc;
+            if (expr.length === 2) {
+                if (op === "+") {
+                    calc = expr[0] + expr[1];
+                    // calc = expr[expr.length - 1] + expr[expr.length];
+                    expr = [];
+                    return calc;
+                } else if (op === "-") {
+                    // calc = expr[expr.length - 1] - expr[expr.length];
+                    calc = expr[0] - expr[1];
+                    expr = [];
+                    return calc;
+                } else if (op === "*") {
+                    // calc = expr[expr.length - 1] * expr[expr.length]
+                    calc = expr[0] * expr[1]
+                    // expr = [];
+                    return calc;
+                } else if (op === "/") {
+                    // calc = expr[expr.length - 1] / expr[expr.length]
+                    calc = expr[0] / expr[1]
+                    // expr = [];
+                    // input_exp.value = expr[0] / expr[1];
+                    return calc;
+                } else if (op === "=") {
+                    console.log(calc);
+                }
+            } else {
+                // input_exp.value = calculations;
+                // input_exp.textContent = calculations;
+                console.log("else block")
+                // input_exp.innerText = "";
+                // input_exp.textContent = "";
+                // input_exp.value = expr[0];
+                // input_exp.textContent = expr[0];
+                // input_exp.textContent = "";
+                calc = expr[0];
+                // expr.push(calc);
+                input_exp.textContent = "";
+                // calc = justCalculation(op, calc);
+                console.log("out of else block")
+                return calc;
+            }
+            // return calc;
+            // input_exp.textContent = calculations;
+            // input_exp.value = calculations;
+        }
+
+    function keypadPressed(ev) {
+            // let expr = input_exp.value, num1, num2;
+            let num1, num2;
+            if (typeof (ev.target.value) === "number") {
+                // expr += nums;
+                // input_exp.value += nums;
+                input_exp.value += ev.target.value;
+                // console.log(nums, typeof(nums));
+                console.log(ev.target.value, typeof (ev.target.value), typeof (input_exp.value));
+
+                num1 = input_exp.value;
+                expr.push(num1)
+                console.log(num1, expr);
+            } else {
+                console.log(ev.target.value, typeof (ev.target.value), typeof (input_exp.value), "else");
+                console.log(["+", "-", "*", "/"].includes(input_exp.value), ["+", "-", "*", "/"].includes(ev.target.value));
+                if (["+", "-", "*", "/"].includes(ev.target.value)) {
+                    // input_exp.value = "";
+
+                    // num2 = +input_exp.value.split(ev.target.value).join();
+                    // console.log(num2, typeof(num2));
+
+                    // input_exp.value = "";
+                    // input_exp.textContent = num1;
+                    // console.log(expr);
+                    // console.log(expr.split(""));
+                    // num2 = Math.max.apply(expr);
+                    num2 = Math.max.apply(Math,expr);
+                    console.log(num2, typeof(num2));
+                    // expr = [];
+                    expr.push(num2);
+                    // input_exp.value = num2;
+                    input_exp.value = "";
+
+                }
+            }
+            //  console.log(expr.sort((a,b) => a>b));
+            addNums()
+        }
+
+
+    function keypadPressed(ev) {
+            // console.log(ev.target.value);
+            // input_exp.textContent = ev.target.value;
+            // input_exp.value = ev.target.value;
+            // input_exp.value += +ev.target.value;
+            // executeOperations()
+
+            // let nums = +ev.target.value;
+            // console.log(nums, typeof(ev.target.value));
+
+            // if(typeof(nums) === "number") {
+            //     input_exp.value += ev.target.value;
+            // } else if(ev.target.value === "+") {
+            //     input_exp.value += ev.target.value;
+            // }
+
+            // let expr = input_exp.value, num1, num2;
+            let expr = [], num1, num2;
+            if (typeof(ev.target.value) === "number") {
+                // expr += nums;
+                // input_exp.value += nums;
+                input_exp.value += ev.target.value;
+                // console.log(nums, typeof(nums));
+                console.log(ev.target.value, typeof(ev.target.value), typeof(input_exp.value));
+                
+                // if (["+", "-", "*", "/"].contains(input_exp.value)) {
+                //     num1 = input_exp.value;
+                //     console.log(num1, ev.target.value);
+                //     input_exp.value += ev.target.value;
+                // }
+
+                // if (["+", "-", "*", "/"].contains(ev.target.value)) {
+                //     num1 = input_exp.value;
+                //     console.log(num1, ev.target.value);
+                //     input_exp.value += ev.target.value;
+                // }
+                num1 = input_exp.value;
+                expr.push(num1)
+                console.log(num1, expr);
+            } else {
+                console.log(ev.target.value, typeof(ev.target.value), typeof(input_exp.value), "else");
+                console.log(["+", "-", "*", "/"].includes(input_exp.value), ["+", "-", "*", "/"].includes(ev.target.value));
+                if(["+", "-", "*", "/"].includes(ev.target.value)) {
+                    // input_exp.value = "";
+                    
+                    // num2 = +input_exp.value.split(ev.target.value).join();
+                    // console.log(num2, typeof(num2));
+                    
+                    input_exp.value = "";
+                    // input_exp.textContent = num1;
+                    // console.log(expr);
+
+                }
+            } 
+            // console.log(expr);
+            // if (["+", "-", "*", "/"].contains(+ev.target.value)) {
+            //     // expr = "";
+            //     // expr += ev.target.value;
+            //     num1 = input_exp.value;
+            //     console.log(num1, ev.target.value);
+            //     input_exp.value += ev.target.value;
+            // }
+
+            // if(typeof(nums) === "number") {
+            //     input_exp.value += ev.target.value;
+            //     num1 = input_exp.value;
+            // } else if(["+","-","*","/"].contains(ev.target.value)) {
+            //     input_exp.textContent = "";
+            //     // input_exp.value += ev.target.value;
+            //     num1 += ev.target.value;
+            // }
+
+            // if(typeof(nums) === "number") {
+            //     input_exp.value += ev.target.value;
+            //     if(["+","-","*","/"].contains(ev.target.value)) {
+            //         input_exp.value += ev.target.value;
+            //     }
+            // }
+            addNums()
+        }
+
+
+            let numpad = document.querySelector(".calc_numpad");
+        let operators = document.querySelector("#calc_operators");
+        let input_exp = document.querySelector("input");
+        function makingGridForNumpads(rows,  cols) {
+            numpad.style.setProperty("--grid:cols", cols);
+            numpad.style.setProperty("--grid:rows", rows);
+            for(let i = 1; i <= rows * cols; i++) {
+                let key_cell = document.createElement("div");
+                key_cell.textContent = i;
+                key_cell.value = i;
+                numpad.appendChild(key_cell);
+                numpad.appendChild(key_cell).classList.add("calc_item");
+
+                key_cell.addEventListener("click", keypadPressed);
+                // key_cell.addEventListener("click", (ev) => {
+                //     console.log(ev.target.value);
+                // });
+            }
+            let num_zero = document.createElement("div");
+            num_zero.textContent = "0";
+            let num_dec = document.createElement("div");
+            num_dec.textContent = ".";
+            let eq_sign = document.createElement("div");
+            eq_sign.textContent = "=";
+            // num_dec.style.paddingLeft = "9px";
+            // num_dec.style.paddingBottom = "11px";
+            // num_dec.style.marginBottom = "11px";
+            // num_dec.style.marginLeft = "4px";
+            // numpad.appendChild(num_zero).classList.add("calc_extra","calc_item");
+            // numpad.appendChild(num_dec).classList.add("calc_extra", "calc_item");
+            numpad.appendChild(num_zero).classList.add("calc_item");
+            numpad.appendChild(num_dec).classList.add("calc_item");
+            numpad.appendChild(eq_sign).classList.add("calc_item");
+
+            //
+
+        }
+        function makingGridForOperators(rows, cols) {
+            operators.style.setProperty("--op:rows", rows);
+            operators.style.setProperty("--op:cols", cols);
+            for(let i = 0; i < rows * cols; i++) {
+                let op_cell = document.createElement("div");
+                if(i === 0) {
+                    op_cell.textContent = "+";
+                    op_cell.value = "+";
+                    // op_cell.style.paddingTop = "4px";
+                } else if(i === 1) {
+                    op_cell.textContent = "-";
+                    op_cell.value = "-";
+                    // op_cell.style.paddingLeft = "4px";
+                    // op_cell.style.paddingTop = "13.5px";
+                    op_cell.style.marginTop = "2px";
+                    op_cell.style.fontSize = "16px";
+                } else if(i === 2) {
+                    op_cell.textContent = "*";
+                    op_cell.value = "*";
+                    // op_cell.style.paddingTop = "22px";
+                    // op_cell.style.paddingLeft = "4px";
+                    op_cell.style.marginTop = "11px";
+                } else if(i === 3) {
+                    op_cell.textContent = "/";
+                    op_cell.value = "/";
+                    // op_cell.style.paddingLeft = "4px";
+                    op_cell.style.marginTop = "2px";
+                }
+                operators.appendChild(op_cell).classList.add("op_item");
+                op_cell.addEventListener("click", keypadPressed);
+            }
+        }
+        function keypadPressed(ev) {
+            // console.log(ev.target.value);
+            // input_exp.textContent = ev.target.value;
+            input_exp.value = ev.target.value;
+            // executeOperations()
+        }
+        makingGridForNumpads(3,3);
+        makingGridForOperators(4,1);
+-->
