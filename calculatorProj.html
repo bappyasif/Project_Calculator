@@ -115,6 +115,7 @@
         let input_exp = document.querySelector("input");
         let calc_keys = document.querySelector(".calc_keys");
         let num_zero, num_dec, eq_sign;
+
         function makingGridForNumpads(rows, cols) {
             numpad.style.setProperty("--grid:cols", cols);
             numpad.style.setProperty("--grid:rows", rows);
@@ -126,6 +127,8 @@
                 numpad.appendChild(key_cell).classList.add("calc_item");
 
                 key_cell.addEventListener("click", keypadPressed);
+
+                // key_cell.addEventListener("click", evaluateExpression);
 
                 // key_cell.addEventListener("click", calculateExpression);
 
@@ -162,6 +165,7 @@
 
         eq_btn.addEventListener("click", () => {
             // console.log(calculations);
+
             if (expr[expr.length - 1] !== -1) {
                 expr.push(calculations);
                 // input_exp.value = expr[expr.length - 1];
@@ -169,6 +173,14 @@
             } else {
                 input_exp.value = "";
             }
+
+            // if(expr[expr.length - 1] === 1 && input_exp.value !== null) {
+            //     expr.push(calculations);
+            //     input_exp.value = calculations;
+            // } else if(expr[expr.length - 1] !== 1) {
+            //     expr.push(calculations);
+            //     input_exp.value = calculations;
+            // }
         });
 
         function makingGridForOperators(rows, cols) {
@@ -200,6 +212,8 @@
                 }
                 operators.appendChild(op_cell).classList.add("op_item");
                 op_cell.addEventListener("click", keypadPressed);
+
+                // op_cell.addEventListener("click", evaluateExpression);
 
                 // op_cell.addEventListener("click", calculateExpression);
             }
@@ -249,6 +263,41 @@
                 console.log("out of else block")
                 return calc;
             }
+
+            // if (expr.length === 2) {
+            //     return justCalculation(op, calc)
+            // } else if(expr.length === 1) {
+            //     // return simpleSingleOperandCalculation(op, calc);
+            // } else {
+            //     console.log("else block")
+            //     calc = expr[0];
+            //     // input_exp.value = "";
+            //     input_exp.textContent = "";
+            //     // calc = justCalculation(op, calc);
+            //     console.log("out of else block")
+            //     return calc;
+            // }
+        }
+
+        function simpleSingleOperandCalculation(op, calc) {
+            if (op === "+") {
+                calc = expr[0] + eval(input_exp.value);
+                expr = [];
+                return calc;
+            } else if (op === "-") {
+                calc = expr[0] - eval(input_exp.value);
+                expr = [];
+                return calc;
+            } else if (op === "*") {
+                calc = expr[0] * eval(input_exp.value)
+                expr = [];
+                return calc;
+            } else if (op === "/") {
+                calc = expr[0] / eval(input_exp.value)
+                expr = [];
+                // input_exp.value = expr[0] / expr[1];
+                return calc;
+            }
         }
 
         function justCalculation(op, calc) {
@@ -283,7 +332,7 @@
             // let ex_arr = input_exp.value.split("+");
             let ex_arr;
 
-            if (typeof(ev.target.value) === "number") {
+            if (typeof (ev.target.value) === "number") {
                 // if (input_exp.value.includes("+")) {
                 //     calcAdd();
                 // }
@@ -320,6 +369,22 @@
 </html>
 
 <!--
+
+            function evaluateExpression(ev) {
+            let expression = input_exp.value += ev.target.value;
+            // console.log(expression);
+            let arr_expr = expression.split("/");
+            // console.log(arr_expr, arr_expr[0].split("*")[1], arr_expr[1]);
+            let first_split = +arr_expr[0].split("*")[1];
+            // console.log(arr_expr, first_split, +arr_expr[1]);
+            let init_split = +arr_expr[0].split("*")[0];
+            console.log(first_split / +arr_expr[1] + init_split);
+
+            if(expression.includes["+","-"]) {
+                console.log()
+            }            
+        }
+
     function numberOperations(op) {
             input_exp.value = "";
             let calc;

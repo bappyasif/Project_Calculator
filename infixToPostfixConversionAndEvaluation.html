@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infix To Postfix Convertion And Evaluator</title>
+</head>
+
+<body>
+    <div class="container">
+        <input type="text" placeholder="Enter Expression">
+        <button>processTokens</button>
+        <div class="post-fix"></div>
+        <div class="calc"></div>
+    </div>
+
+    <script>
+        let in_exp = document.querySelector("input");
+        let post_fix = document.querySelector(".post-fix");
+        let calcValue = document.querySelector(".calc");
+        let btn = document.querySelector("button");
+
+        Array.prototype.peek = function () {
+            return this[this.length - 1]
+        }
+
+        function operatorPrecedence(op) {
+            switch (op) {
+                case "+":
+                case "-":
+                    return 1;
+                case "*":
+                case "/":
+                    return 2;
+            }
+            return -1;
+        }
+
+        function infixToPostfix(expr) {
+            let postfixOutput = "";
+            let stack = [];
+            for (let token in expr) {
+                let currToken = expr[token];
+                // If operand then add it to output
+                if (/\d/.test(currToken)) {
+                    console.log(currToken);
+                    // postfixOutput += currToken + " ";
+                    postfixOutput += currToken;
+                } else if (currToken === "(") {
+                    stack.push(currToken);
+                } else if (currToken === ")") {
+                    while (stack.length !== 0 && stack.peek() !== "(") {
+                        postfixOutput += stack.pop();
+                        // stack.pop();
+                    }
+                } else {
+                    // an operator is encountered
+                    while (stack.length > 0 && (operatorPrecedence(currToken) <= operatorPrecedence(stack.peek()))) {
+                        // postfixOutput += stack.pop() + " ";
+                        postfixOutput += stack.pop();
+                    }
+                    stack.push(currToken);
+                }
+            }
+            // pop all existing operators from stack
+            while (stack.length > 0) {
+                if (stack.peek() === "(") {
+                    return "Invalid Expression";
+                }
+                console.log(stack, "pop operators");
+                // postfixOutput += stack.pop() + " ";
+                postfixOutput += stack.pop();
+            }
+            // console.log(postfixOutput)
+            post_fix.textContent = postfixOutput;
+            return postfixOutput;
+        }
+
+        // let solve = infixToPostfix(in_exp.value);
+        // console.log(solve);
+
+        function solvePostfix(newExpr) {
+            let stack = [];
+            let expr = newExpr.split("");
+            for (let idx in expr) {
+                let currToken = expr[idx];
+                // if operand push then it to stack
+                if (/\d/.test(currToken)) {
+                    // console.log("number",currToken);
+                    stack.push(parseInt(currToken));
+                    // stack.unshift(parseInt(currToken));
+                    // console.log(typeof(stack[0]));
+                } else {
+                    console.log(stack);
+                    let a = stack.pop();
+                    let b = stack.pop();
+                    // console.log(a, b);
+                    switch (currToken) {
+                        case "+":
+                            // stack.push(a + b);
+                            stack.push(b + a);
+                            // console.log(stack);
+                            break;
+                        case "-":
+                            stack.push(b - a);
+                            // stack.push(a - b);
+                            // console.log(stack);
+                            break;
+                        case "*":
+                            stack.push(b * a);
+                            // stack.push(a * b);
+                            // console.log(stack);
+                            break;
+                        case "/":
+                            stack.push(b / a);
+                            // stack.push(a / b);
+                            // console.log(stack);
+                            break;
+                    }
+                }
+            }
+            // console.log(stack[0]);
+            // return stack.pop();
+            calcValue.textContent = stack[0];
+            return stack[0];
+        }
+
+        // console.log(solvePostfix(solve));
+        // console.log(solvePostfix("10 3 5 *16 4-/+"));
+        // console.log(solvePostfix("231*+9-")); // -4
+
+        btn.addEventListener("click", () => {
+            let solve = infixToPostfix(in_exp.value);
+            solvePostfix(solve);
+        });
+
+    </script>
+</body>
+
+</html>
+
+<!--
+
+    let in_exp = document.querySelector("input");
+        let post_fix = document.querySelector(".post-fix");
+        let cal = document.querySelector(".calc");
+
+        Array.prototype.peek = function () {
+            return this[this.length - 1]
+        }
+
+        function operatorPrecedence(op) {
+            switch (op) {
+                case "+":
+                case "-":
+                    return 1;
+                case "*":
+                case "/":
+                    return 2;
+            }
+            return -1;
+        }
+
+        function infixToPostfix(expr) {
+            let postfixOutput = "";
+            let stack = [];
+            for (let token in expr) {
+                let currToken = expr[token];
+                // If operand then add it to output
+                if (/\d/.test(currToken)) {
+                    console.log(token);
+                    // postfixOutput += currToken + " ";
+                    postfixOutput += currToken;
+                } else if (currToken === "(") {
+                    stack.push(currToken);
+                } else if (currToken === ")") {
+                    while (stack.length !== 0 && stack.peek() !== "(") {
+                        postfixOutput += stack.pop();
+                        stack.pop();
+                    }
+                } else {
+                    // an operator is encountered
+                    while (stack.length > 0 && (operatorPrecedence(currToken) <= operatorPrecedence(stack.peek()))) {
+                        // postfixOutput += stack.pop() + " ";
+                        postfixOutput += stack.pop();
+                        // console.log(stack,"else while");
+                        // stack.pop();
+                        // console.log(stack,"else while..");
+                    }
+                    stack.push(currToken);
+                }
+            }
+            // pop all existing operators from stack
+            while (stack.length > 0) {
+                if (stack.peek() === "(") {
+                    return "Invalid Expression";
+                }
+                console.log(stack, "pop operators");
+                // postfixOutput += stack.pop() + " ";
+                postfixOutput += stack.pop();
+            }
+            // console.log(postfixOutput)
+            return postfixOutput;
+        }
+
+
+        let solve = infixToPostfix(in_exp.value);
+        console.log(solve);
+
+        function solvePostfix(newExpr) {
+            let stack = [];
+            let expr = newExpr.split("");
+            for (let idx in expr) {
+                let currToken = expr[idx];
+                // if operand push then it to stack
+                // console.log(currToken);
+                if (/\d/.test(currToken)) {
+                    // console.log("number",currToken);
+                    stack.push(parseInt(currToken));
+                    // console.log(typeof(stack[0]));
+                } else {
+                    // console.log(currToken);
+                    console.log(stack);
+                    let a = stack.pop();
+                    let b = stack.pop();
+                    console.log(a, b);
+                    switch (currToken) {
+                        case "+":
+                            stack.push(a + b);
+                            console.log(stack);
+                            break;
+                        case "-":
+                            stack.push(a - b);
+                            console.log(stack);
+                            break;
+                        case "*":
+                            stack.push(a * b);
+                            console.log(stack);
+                            break;
+                        case "/":
+                            stack.push(a / b);
+                            console.log(stack);
+                            break;
+                    }
+                }
+            }
+            // console.log(stack[0]);
+            // console.log(stack[0]);
+            return stack.pop();
+        }
+
+        console.log(solvePostfix(solve));
+        // console.log(solvePostfix("10 3 5 *16 4-/+"));
+        console.log(solvePostfix("231*+9-")); // -4
+
+        // solvePostfix(solve);
+        // console.log(solvePostfix(solve))
+
+        let in_exp = document.querySelector("input");
+        let post_fix = document.querySelector(".post-fix");
+        let cal = document.querySelector(".calc");
+        let stack = [];
+        let op_stack = [];
+        let temp;
+        let temp2;
+        let retVal;
+        let outputList = [];
+        let postfixList = [];
+
+    function solvePostfix(solve) {
+            let expr = solve.split(" ");
+            let postfixStack = [];
+            expr.forEach(currToken => {
+                if (isOperator(currToken)) {
+                    postfixStack.push(computeExp(postfixStack.pop(), symToOperator(currToken), postfixStack.pop()));
+                } else {
+                    postfixStack.push(currToken);
+                }
+            });
+            return postfixStack[0];
+        }
+        function isOperator(opType) {
+            switch (opType) {
+                case "+":
+                case "-":
+                case "*":
+                case "/":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        function computeExp(a, operator, b) {
+            return operator(a,b);
+        }
+        function symToOperator(symbol) {
+            switch (symbol) {
+                case "+": return plus;
+                case "-": return minus;
+                case "*": return multiply;
+                case "/": return divide;
+            }
+        }
+        function plus(a,b) {return a + b;}
+        function minus(a,b) {return a - b;}
+        function multiply(a,b) {return a * b;}
+        function divide(a,b) {return a / b;}
+
+    function solvePostfix(newExpr) {
+            let stack = [];
+            let token;
+            // newExpr = newExpr.split("");
+            for (let k = 0, length = newExpr.length; k < length; k++) {
+                token = newExpr[k];
+                if (/\d/.test(token)) {
+                    stack.push(parseInt(token));
+                } else if (token in operators) {
+                    let a = stack.pop();
+                    let b = stack.pop();
+                    let result = operators[token](a, b);
+                    stack.push(result);
+                }
+            }
+            if (stack.length > 1) {
+                throw "ParseError: " + newExpr + " stack: " + stack;
+            }
+
+            return stack[0];
+        }
+
+        let operators = {
+            "+": function (a, b) { return a + b },
+            "-": function (a, b) { return a - b },
+            "*": function (a, b) { return a * b },
+            "/": function (a, b) { return a / b },
+        }
+
+    function infixToPostfix(infixExp) {
+            let output = [];
+            let stack = [];
+            for (let token in infixExp) {
+                let currToken = infixExp[token];
+                // console.log(currToken);
+                while (stack.length) {
+                    let peekedToken = stack.peek();
+                    // console.log(peekedToken);
+
+                    let peekedTokenPrecedence = precedenceOf(peekedToken);
+                    let currentTokenPrecedence = precedenceOf(currToken);
+                    if (peekedTokenPrecedence >= currentTokenPrecedence) {
+                        output.push(stack.pop())
+                    } else {
+                        break;
+                    }
+                }
+                stack.push(currToken);
+            }
+            while (stack.length) {
+                output.push(stack.pop());
+            }
+            // console.log(output.join(""));
+            return output.join("");
+        }
+
+        let precedenceMap = {
+            "*": 3,
+            "/": 3,
+            "+": 2,
+            "-": 2
+        }
+
+        function precedenceOf(curr) {
+            return precedenceMap[curr];
+        }
+
+    function solvePostfix(expr) {
+            let newExpr = expr.split("");
+            let stack = [];
+            for (let i = 0; i < newExpr.length; i++) {
+                if (!["+","-","*","/"].includes(newExpr[i])) {
+                    stack.push(parseInt(newExpr[i]));
+                } else {
+                    let a = stack.pop();
+                    let b = stack.pop();
+                    console.log(a,b)
+                    if (newExpr[i] === "+") {
+                        stack.push(parseInt(a) + parseInt(b));
+                    } else if (newExpr[i] === "-") {
+                        stack.push(parseInt(a) - parseInt(b));
+                    } else if (newExpr[i] === "*") {
+                        stack.push(parseInt(a) * parseInt(b));
+                        console.log(stack)
+                    } else if (newExpr[i] === "/") {
+                        stack.push(parseInt(a) / parseInt(b));
+                    }
+                }
+            }
+            if(stack.length > 1) {
+                return "error";
+            } else {
+                return stack[0];
+            }
+        }
+
+    function solvePostfix(postfixExp) {
+            let resultStack = [];
+            postfixExp = postfixExp.split(" ");
+            for (let token in postfixExp) {
+                // if (!isNaN(postfixExp[token] && isFinite(postfixExp[token]))) {
+                //     resultStack.push(postfixExp[token]);
+                //     // console.log(resultStack);
+                // }
+                if (!isNaN(postfixExp[token] && isFinite(postfixExp[token]))) {
+                    resultStack.push(postfixExp[token]);
+                    // console.log(resultStack);
+                }
+                else {
+                    let a = resultStack.pop();
+                    let b = resultStack.pop();
+                    console.log(a,b);
+                    if(postfixExp[token] === "+") {
+                        resultStack.push(parseInt(a) + parseInt(b));
+                    } else if(postfixExp[token] === "-") {
+                        resultStack.push(parseInt(a) - parseInt(b));
+                    } else if(postfixExp[token] === "*") {
+                        resultStack.push(parseInt(a) * parseInt(b));
+                    } else if(postfixExp[token] === "/") {
+                        resultStack.push(parseInt(a) / parseInt(b));
+                    }
+                }
+            }
+            if (resultStack.length > 1) {
+                return "error";
+            } else {
+                return resultStack.pop();
+                // console.log(resultStack.pop());
+            }
+        }
+
+        String.prototype.isNumeric = function () {
+            return !isNaN(this) && isFinite(this);
+        }
+
+            function infixToPostfix(infixExp) {
+            let precedence = ["+", "-", "*", "/"];
+            for (let token in infixExp) {
+                // console.log("inside for");
+                if (typeof(+token) === "number") {
+                    // console.log("inside if 1");
+                    postfixList.push(token);
+                    // console.log("inside if");
+                    // continue;
+                }
+                let topOfStack = op_stack[op_stack.length - 1];
+                let prevPrec = precedence.indexOf(topOfStack);
+                let currPrec = precedence.indexOf(token);
+                console.log(prevPrec, currPrec);
+                while (currPrec < prevPrec) {
+                    console.log("inside while");
+                    let op = op_stack.pop();
+                    postfixList.push(op);
+                    prevPrec = precedence.indexOf(op_stack[op_stack.length - 1]);
+                }
+                op_stack.push(token);
+                
+            }
+            // return postfixList;
+            console.log(postfixList);
+        }
+        function tokenizeStream(ex) {
+            return ex.replace(/\s/g, "").split("").map((token, idx) => /^\d$/.test(token) ? +token : token);
+        }
+        infixToPostfix(tokenizeStream(in_exp.value));
+
+    let precedence = {
+            "*": 3,
+            "/": 3,
+            "+": 2,
+            "-": 2
+        }
+        let tokenList = in_exp.value.split("");
+        for(let token in tokenList) {
+            if(token in "0123456789" || token in "+-*/") {
+                postfixList.push(token);
+            } else {
+                while(!op_stack.length === -1 && precedence) {
+                
+                }
+            }
+        }
+
+
+            function calculateExpression(infixExp) {
+            let optQueue = "";
+            let operatorStack = [];
+            let operators = {
+                "/": {
+                    precedencce: 3,
+                    associativity: "Left"
+                },
+                "*": {
+                    precedencce: 3,
+                    associativity: "Left"
+                },
+                "+": {
+                    precedencce: 2,
+                    associativity: "Left"
+                },
+                "-": {
+                    precedencce: 2,
+                    associativity: "Left"
+                }
+            }
+            infixExp = infixExp.replace(/\s+/g,"");
+            infixExp = infixExp.split(/([\+\-\*\/\\])/);
+            // console.log(infixExp);
+            for(let ex in infixExp) {
+                let token = infixExp[ex];
+                if(token.isNumeric()) {
+                    optQueue += token+" ";
+                } else if("+-*/".indexOf(token) !== -1) {
+                    let t1 = token;
+                    let t2 = operatorStack[operatorStack.length-1];
+                    while("+-*/".indexOf(t2) !== -1 && ((operators[t1].associativity === "Left" && operators[t1].precedencce <= operators[t2].precedencce) && (operators[t1].associativity === "Right" && operators[t1].precedencce<operators[t2].precedencce))) {
+                        optQueue += operatorStack.pop()+" ";
+                        t2 = operatorStack[operatorStack.length-1];
+                    }
+                    operatorStack.push(t1);
+                }
+                while(operatorStack.length > 0) {
+                    optQueue += operatorStack.pop() + " ";
+                }
+                // return optQueue;
+                console.log(optQueue);
+            }
+        }
+
+        String.prototype.isNumeric = function() {
+            return !isNaN(parseFloat(this)) && isFinite(this);
+        }
+        calculateExpression(in_exp.value);
+
+            let operators = {
+            "+": function(a,b) {return a+b},
+            "-": function(a,b) {return a-b},
+            "*": function(a,b) {return a*b},
+            "/": function(a,b) {return a/b},
+        };
+        let precedence = [
+            ["*","/"],
+            ["+","-"]
+        ];
+        
+        while(in_exp.length > 1) {
+            
+        }
+
+    let cvrtInfix = in_exp.value.split("");
+        // console.log(cvrtInfix);
+
+        for (let ex in cvrtInfix) {
+
+            if (!["/", "*", "+", "-"].includes(cvrtInfix[ex])) {
+                stack.push(cvrtInfix[ex]);
+            } else if (["/", "*", "+", "-"].includes(cvrtInfix[ex])) {
+                if (cvrtInfix[ex] === "+") {
+                    temp = +stack.pop();
+                    temp2 = +stack.pop();
+                    retVal = temp + temp2;
+                    stack.push(retVal);
+                }
+                if (cvrtInfix[ex] === "-") {
+                    temp = +stack.pop();
+                    temp2 = +stack.pop();
+                    retVal = temp - temp2;
+                    stack.push(retVal);
+                }
+                if (cvrtInfix[ex] === "*") {
+                    temp = +stack.pop();
+                    temp2 = +stack.pop();
+                    retVal = temp * temp2;
+                    stack.push(retVal);
+                }
+                if (cvrtInfix[ex] === "/") {
+                    temp = +stack.pop();
+                    temp2 = +stack.pop();
+                    retVal = temp / temp2;
+                    stack.push(retVal);
+                }
+            }
+        }
+
+        console.log(stack.pop());
+
+    for(let ex in cvrtInfix) {
+            // console.log(cvrtInfix[ex]);
+            // outputList.push(cvrtInfix[ex]);
+            // console.log(outputList);
+            
+            // if(ex.includes("/","*","+","-")) {
+            //     console.log(ex);
+            // }
+
+            if(!["/","*","+","-"].includes(cvrtInfix[ex])) {
+                // console.log(cvrtInfix[ex]);
+                // outputList.push(cvrtInfix[ex]);
+                stack.push(cvrtInfix[ex]);
+            } else {
+                op_stack.push(cvrtInfix[ex]);
+                // outputList.push(op_stack.pop());
+            }
+
+            outputList = stack.concat(op_stack);
+            
+
+            // outputList.push(op_stack.pop());
+
+            // if(ex in ["/","*","+","-"]) {
+            //     console.log(ex);
+            // }
+        }
+            for (let ex of in_exp.value) {
+
+            // if (!["+", "-", "*", "/"].includes(ex)) {
+            //     stack.push(ex);
+            // } else {
+            //     op_stack.push(ex);
+            // }
+
+            // let divIdx = op_stack.findIndex(el => el.includes("/"));
+            // let multIdx = op_stack.findIndex(el => el.includes("*"));
+            // let plusIdx = op_stack.findIndex(el => el.includes("+"));
+            // let minusIdx = op_stack.findIndex(el => el.includes("-"));
+            // // console.log(divIdx,multIdx,plusIdx,minusIdx);
+
+            // // temp = +stack.pop();
+            // // temp2 = +stack.pop();
+
+            // if (ex === "+") {
+            //     // temp = +stack.pop();
+            //     // temp2 = +stack.pop();
+            //     retVal = temp + temp2;
+            //     stack.push(retVal);
+            //     console.log(temp, temp2, retVal);
+            // } else if (ex === "-") {
+            //     temp = +stack.pop();
+            //     temp2 = +stack.pop();
+            //     retVal = temp - temp2;
+            //     stack.push(retVal);
+            //     console.log(temp, temp2, retVal);
+            // } else if (ex === "*") {
+            //     temp = +stack.pop();
+            //     temp2 = +stack.pop();
+            //     retVal = temp * temp2;
+            //     stack.push(retVal);
+            //     console.log(temp, temp2, retVal);
+            // } else if (ex === "/") {
+            //     temp = +stack.pop();
+            //     temp2 = +stack.pop();
+            //     retVal = temp - temp2;
+            //     stack.push(retVal);
+            //     console.log(temp, temp2, retVal);
+            // }
+            // console.log(stack);
+            // op_stack.findIndex(el=>{
+            //     if(el.includes("/")) {
+            //         console.log(op_stack, el);
+            //     }
+            // })
+
+            // if (!["+", "-", "*", "/"].includes(ex)) {
+            //     stack.push(ex);
+            //     // temp = +stack.pop();
+            //     // temp2 = +stack.pop();
+            // } 
+            // else if(stack.length === 2) {
+            //     temp = +stack.pop();
+            //     temp2 = +stack.pop();
+            // }
+            // // temp = +stack.pop();
+            // // temp2 = +stack.pop();
+            // // console.log(temp, temp2);
+            // if (ex === "+") {
+            //     retVal = temp + temp2;
+            // } else if (ex === "-") {
+            //     retVal = temp - temp2;
+            // } else if (ex === "*") {
+            //     retVal = temp * temp2;
+            // } else if (ex === "/") {
+            //     retVal = temp / temp2;
+            // }
+            // stack.push(retVal);
+            // // console.log(stack, retVal);
+            // console.log(stack);
+
+                // if (!["+", "-", "*", "/"].includes(ex)) {
+                //     stack.push(ex);
+                // } else if (stack.length == 2) {
+                //     temp = +stack.pop();
+                //     temp2 = +stack.pop();
+                //     console.log(temp, temp2);
+                //     if (ex === "+") {
+                //         retVal = temp + temp2;
+                //     } else if (ex === "-") {
+                //         retVal = temp - temp2;
+                //     } else if (ex === "*") {
+                //         retVal = temp * temp2;
+                //     } else if (ex === "/") {
+                //         retVal = temp / temp2;
+                //     }
+                //     stack.push(retVal);
+                //     console.log(stack, retVal);
+                // }
+        }
+
+    // console.log(stack, retVal);
+
+            // temp = +stack.pop();
+            // temp2 = +stack.pop();
+            // console.log(temp, temp2);
+            // if(ex === "+") {
+            //     retVal = temp + temp2;
+            // } else if(ex === "-") {
+            //     retVal = temp - temp2;
+            // } else if (ex === "*") {
+            //     retVal = temp * temp2;
+            // } else if(ex === "/") {
+            //     retVal = temp / temp2;
+            // }
+            // stack.push(retVal);
+
+            // retVal = eval(temp, ex, temp2);
+            // retVal = eval(temp + ex + temp2);
+
+            // retVal = eval(new String("temp + ex + temp2"));
+            // stack.push(retVal);
+            // console.log(stack, retVal);
+
+            // if (!["+", "-", "*", "/"].includes(ex)) {
+            //     stack.push(ex);
+            // } else {
+            //     op_stack.push(ex)
+            // }
+            // console.log(stack, op_stack);
+
+
+            // for(let i in in_exp.value) {
+        //     console.log("inside loop")
+        //     // if(typeof(+in_exp.value[i]) === "number") {
+        //     //     stack.push(in_exp[i]);
+        //     // }
+        //     // if(["+", "-", "*", "/"].includes(in_exp[i])) {
+        //     //     op_stack.push(in_exp[i])
+        //     // }
+        //     if(!["+", "-", "*", "/"].includes(in_exp[i])) {
+        //         stack.push(in_exp[i].value);
+        //     } else {
+        //         op_stack.push(in_exp[i].value)
+        //     }
+
+        //     console.log(stack, op_stack);
+        // }
+-->
