@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infix To Postfix Convertion And Evaluator For Multi Digit Number</title>
+</head>
+
+<body>
+    <div class="container">
+        <input type="text" placeholder="Enter Expression">
+        <button>processTokens</button>
+        <div class="post-fix"></div>
+        <div class="calc"></div>
+    </div>
+
+    <script>
+        let in_exp = document.querySelector("input");
+        let post_fix = document.querySelector(".post-fix");
+        let calcValue = document.querySelector(".calc");
+        let btn = document.querySelector("button");
+
+        Array.prototype.peek = function () {
+            return this[this.length - 1]
+        }
+
+        function operatorPrecedence(op) {
+            switch (op) {
+                case "+":
+                case "-":
+                    return 1;
+                case "*":
+                case "/":
+                    return 2;
+            }
+            return -1;
+        }
+
+        function infixToPostfix(expr) {
+            let postfixOutput = "";
+            let stack = [];
+            for (let token in expr) {
+                let currToken = expr[token];
+                // If operand then add it to output
+                if (/\d/.test(currToken) || token === ".") {
+                    postfixOutput += currToken;
+                } else if(token === ".") {
+                    postfixOutput += currToken;
+                }
+                else {
+                    // an operator is encountered
+
+                    // add a separator after Operands been pushed into Postfix Expression
+                    // this would make sure it also counts multiple digit numbers
+                    postfixOutput += " ";
+
+                    while (stack.length > 0 && (operatorPrecedence(currToken) <= operatorPrecedence(stack.peek()))) {
+                        // Add a separator after operator for Postfix Expression tokenizer
+                        postfixOutput += stack.pop() + " ";
+                    }
+                    // push operator onto Stack.
+                    stack.push(currToken);
+                }
+            }
+            // pop all existing operators from stack and add a seperator at begining
+            while (stack.length > 0) {
+                postfixOutput += " "+stack.pop();
+            }
+            post_fix.textContent = postfixOutput;
+            return postfixOutput;
+        }
+
+        function solvePostfix(newExpr) {
+            let stack = [];
+            // using " " split to account for mutiple digit separator
+            let expr = newExpr.split(" ");
+            console.log("Expr: ",expr);
+            for (let idx in expr) {
+                let currToken = expr[idx];
+                // if operand push then it to stack
+                if (/\d/.test(currToken)) {
+                    stack.push(parseInt(currToken));
+                    // if token is empty assign 0 to it to avoid undefined
+                } else if(currToken === "") {
+                    currToken = 0;
+                } else {
+                    let a = stack.pop();
+                    let b = stack.pop();
+                    switch (currToken) {
+                        case "+":
+                            stack.push(b + a);
+                            break;
+                        case "-":
+                            stack.push(b - a);
+                            break;
+                        case "*":
+                            stack.push(b * a);
+                            break;
+                        case "/":
+                            stack.push(b / a);
+                            break;
+                    }
+                }
+            }
+            calcValue.textContent = stack[0];
+            return stack[0];
+        }
+
+        btn.addEventListener("click", () => {
+            let solve = infixToPostfix(in_exp.value);
+            solvePostfix(solve);
+        });
+
+    </script>
+</body>
+
+</html>
+
+<!--
+    function infixToPostfix(expr) {
+            let postfixOutput = "";
+            let stack = [];
+            for (let token in expr) {
+                let currToken = expr[token];
+                // If operand then add it to output
+                if (/\d/.test(currToken)) {
+
+                    console.log(currToken);
+                    // postfixOutput += currToken + " ";
+                    postfixOutput += currToken;
+                    // console.log("ex: ",postfixOutput);
+
+                    // let n = 1;
+                    // while (n !== 0) {
+                    //     // console.log(currToken);
+                    //     // // postfixOutput += currToken + " ";
+                    //     // postfixOutput += currToken;
+                    //     // // console.log("ex: ",postfixOutput);
+                    //     n--;
+                    // }
+                    
+                    // postfixOutput += " ";
+                } else if (currToken === "(") {
+                    stack.push(currToken);
+                } else if (currToken === ")") {
+                    while (stack.length !== 0 && stack.peek() !== "(") {
+                        postfixOutput += stack.pop();
+                        // stack.pop();
+                    }
+                } else {
+                    // an operator is encountered
+                    postfixOutput += " ";
+                    while (stack.length > 0 && (operatorPrecedence(currToken) <= operatorPrecedence(stack.peek()))) {
+                        postfixOutput += stack.pop() + " ";
+                        // postfixOutput += stack.pop();
+                    }
+                    // postfixOutput += " ";
+                    stack.push(currToken);
+                }
+            }
+            // pop all existing operators from stack
+            while (stack.length > 0) {
+                if (stack.peek() === "(") {
+                    return "Invalid Expression";
+                }
+                console.log(stack, "pop operators");
+                postfixOutput += " "+stack.pop();
+                // postfixOutput += " "+stack.pop();
+            }
+            // console.log(postfixOutput)
+            post_fix.textContent = postfixOutput;
+            return postfixOutput;
+
+
+            // if (stack.peek() === "(") {
+            //     return "Invalid Expression";
+            // }
+            // if (["+","-","/","*"].includes(stack.peek())) {
+            //     // postfixOutput = "Invalid Expression";
+            //     // post_fix.textContent = postfixOutput;
+            //     post_fix.textContent = "Invalid Expression";
+            //     // return "Invalid Expression";
+            // }
+            // console.log(stack, "pop operators");
+        }
+
+        // let solve = infixToPostfix(in_exp.value);
+        // console.log(solve);
+
+        function solvePostfix(newExpr) {
+            let stack = [];
+            let expr = newExpr.split(" ");
+            console.log("Expr: ",expr);
+            for (let idx in expr) {
+                let currToken = expr[idx];
+                // if operand push then it to stack
+                if (/\d/.test(currToken)) {
+                    stack.push(parseInt(currToken));
+                    // console.log(stack);
+                } else if(currToken === "") {
+                    currToken = 0;
+                } else {
+                    let a = stack.pop();
+                    let b = stack.pop();
+                    // if(b==="") b=0;
+                    // console.log(a, b);
+                    // console.log(currToken);
+                    switch (currToken) {
+                        case "+":
+                            // stack.push(a + b);
+                            stack.push(b + a);
+                            // console.log(stack);
+                            break;
+                        case "-":
+                            stack.push(b - a);
+                            // stack.push(a - b);
+                            // console.log(stack);
+                            break;
+                        case "*":
+                            stack.push(b * a);
+                            // stack.push(a * b);
+                            // console.log(stack);
+                            break;
+                        case "/":
+                            stack.push(b / a);
+                            // stack.push(a / b);
+                            // console.log(stack);
+                            break;
+                    }
+                }
+            }
+            // console.log(stack[0]);
+            // return stack.pop();
+            calcValue.textContent = stack[0];
+            return stack[0];
+        }
+
+        // console.log(solvePostfix(solve));
+        // console.log(solvePostfix("10 3 5 *16 4-/+"));
+        // console.log(solvePostfix("231*+9-")); // -4
+
+        btn.addEventListener("click", () => {
+            let solve = infixToPostfix(in_exp.value);
+            solvePostfix(solve);
+        });
+-->
