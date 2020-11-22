@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <title>Simple Calculator Without Using A Stack</title>
+    <style>
+        :root {
+            operator-cols: 2;
+            operator-rows: 2;
+            operand-cols: 4;
+            operand-rows: 4;
+        }
+
+        .calculator {
+            text-align: center;
+        }
+
+        .operands,
+        .operators {
+            display: grid;
+            grid-gap: 2px;
+        }
+
+        .operands {
+            direction: rtl;
+            grid-template-columns: repeat(var(--operand-cols), 65px);
+            grid-template-rows: repeat(var(--operand-rows), 65px);
+        }
+
+        .operators {
+            grid-template-columns: repeat(var(--operator-cols), 38px);
+            grid-template-rows: repeat(var(--operator-rows), 38px);
+            margin-left: 2px;
+        }
+
+        .numpads {
+            display: flex;
+        }
+
+        .display {
+            display: grid;
+            max-width: 272px;
+        }
+
+        .calculation {
+            text-align: right;
+            height: 31px;
+        }
+
+        .pads {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .extra-keys {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <header>Simple Calculator</header>
+        <div class="container">
+            <header>Mimicing Calculator</header>
+            <div class="container calculator">
+                <div class="display">
+                    <h4>Calculator Space</h4>
+                    <div class="calculation"></div>
+                    <input type="text">
+                </div>
+                <div class="pads">
+                    <div class="numpads">
+                        <div class="operands"></div>
+                        <div class="operators"></div>
+                    </div>
+                    <div class="extra-keys">
+                        <div class="zero btn btn-1 btn-primary">0</div>
+                        <div class="decimal btn btn-2 btn-secondary">.</div>
+                        <div class="equal btn btn-3 btn-info">=</div>
+                        <div class="cancel btn btn-4 btn-warning">C</div>
+                        <div class="clear btn btn-5 btn-danger">AC</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let operand = document.querySelector(".operands");
+        let operator = document.querySelector(".operators");
+        let calculation = document.querySelector(".calculation");
+        let input = document.querySelector("input");
+        // let equal = document.querySelector(".equal");
+        let cancel = document.querySelector(".cancel");
+        let clear = document.querySelector(".clear");
+        let zero = document.querySelector(".zero");
+
+        function operandsTiles(cols, rows) {
+            operand.style.setProperty("--operand-cols", cols);
+            operand.style.setProperty("--operand-rows", rows);
+            for (let i = 1; i <= rows * cols; i++) {
+                let cell = document.createElement("button");
+                cell.textContent = i;
+                cell.value = i;
+                // if (i === 10) {
+                //     cell.textContent = "C";
+                //     cell.value = "C";
+                // } else if (i === 11) {
+                //     cell.textContent = "AC";
+                //     cell.value = "AC";
+                // } else if(i === 12) {
+                //     cell.textContent = "";
+                //     cell.value = "";
+                // }
+                operand.appendChild(cell);
+                cell.addEventListener("click", keyPressed);
+            }
+        }
+
+        function operatorsTiles(cols, rows) {
+            operator.style.setProperty("--operatir-cols", cols);
+            operator.style.setProperty("--operator-rows", rows);
+            for (let i = 0; i < rows * cols; i++) {
+                let cell = document.createElement("button");
+                switch (i) {
+                    case 0:
+                        cell.textContent = "+";
+                        cell.value = "+";
+                        break;
+                    case 1:
+                        cell.textContent = "-";
+                        cell.value = "-";
+                        break;
+                    case 2:
+                        cell.textContent = "/";
+                        cell.value = "/";
+                        break;
+                    case 3:
+                        cell.textContent = "*";
+                        cell.value = "*";
+                        break;
+                    case 4:
+                    cell.textContent = "=";
+                        cell.value = "=";
+                        break;
+                }
+                operator.appendChild(cell);
+                cell.addEventListener("click", keyPressed);
+            }
+        }
+
+        let nums = [];
+
+        function keyPressed(ev) {
+            // console.log(ev.target.value);
+            if (!["+", "-", "*", "/"].includes(ev.target.value)) {
+                input.value = ev.target.value;
+                // calculation.textContent = input.value;
+            } else {
+                nums.push(Number(input.value));
+                // calculation.textContent = ;
+                // calculation.textContent = nums[nums.length - 1];
+            }
+            // let a = Number(calculation.textContent);
+            // let b = Number(input.value);
+            let a = nums.pop();
+            let b = Number(calculation.textContent)
+            let calc;
+            switch (ev.target.value) {
+                case "+":
+                    // input.value = b;
+                    // nums.push(b + a);
+                    input.value = "";
+                    calc = b + a;
+                    calculation.textContent = calc;
+                    break;
+                case "-":
+                    // nums.push(b - a);
+                    calc = b - a;
+                    calculation.textContent = calc;
+                    break;
+                case "*":
+                    // nums.push(b * a);
+                    calc = b * a;
+                    calculation.textContent = calc;
+                    break;
+                case "/":
+                    // nums.push(b / a);
+                    calc = b / a;
+                    calculation.textContent = calc;
+                    break;
+                case "=":
+                    input.value = calculation.textContent;
+                    break;
+            }
+            // calculation.textContent = input.value;
+        }
+
+
+        operandsTiles(3, 3);
+        operatorsTiles(1, 5);
+    </script>
+</body>
+
+</html>
+
+<!--
+
+    function keyPressed(ev) {
+            // console.log(ev.target.value);
+            if (!["+", "-", "*", "/"].includes(ev.target.value)) {
+                input.value = ev.target.value;
+                // nums.push(Number(input.value));
+                calculation.textContent = input.value;
+            } else {
+                let a = nums.pop();
+                nums.push(Number(input.value));
+                // calculation.textContent = nums[nums.length - 1];
+                // let a = Number(nums.pop());
+                // // let b = Number(input.value);
+                // // nums.push(b);
+                // // b = nums.pop();
+                // let b = Number(nums.pop());
+                switch (ev.target.value) {
+                    case "+":
+                        let b = nums.pop();
+                        input.value = b;
+                        nums.push(b + a);
+                        break;
+                    case "-":
+                        nums.push(b - a);
+                        break;
+                    case "*":
+                        nums.push(b * a);
+                        break;
+                    case "/":
+                        nums.push(b / a);
+                        break;
+                }
+                // calculation.textContent = nums[nums.length - 1];
+            }
+            // calculation.textContent = input.value;
+        }
+
+    else {
+                if(nums[0]) {
+                    switch(ev.target.value) {
+                        case "+":
+                        let a = nums.pop();
+                        let b = +input.value;
+                        console.log(a,b);
+                        nums.push(a+b);
+                        break;
+                    }
+                } 
+
+
+    function keyPressed(ev) {
+            // console.log(ev.target.value);
+            if(ev.target.value <= 9) {
+                if(!["+","-","*","/"].includes(ev.target.value)) {
+                    input.value = ev.target.value;
+                }
+            } else if(ev.target.value === 10) {
+                calculation.textContent = "";
+            } else if (ev.target.value === 11) {
+                calculation.textContent = "";
+                input.value = "";
+            }
+            else {
+                calculation.textContent = input.value;
+            }
+        }
+-->

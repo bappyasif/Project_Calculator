@@ -94,7 +94,7 @@
             <h4>Calculator Space</h4>
             <div class="calc_display border border-primary mb-1">
                 <div class="input">
-                    <div class="inp_exp bg-light">11</div>
+                    <div class="inp_exp bg-light"></div>
                     <input type="text">
                 </div>
             </div>
@@ -103,7 +103,7 @@
                 <div class="operator"></div>
             </div>
             <div class="extra_keys mb-2">
-                <div class="cancel bg-dark w-25 mr-1">C</div>
+                <div class="cancel bg-dark w-25 mr-1 text-white">C</div>
                 <div class="clear bg-secondary w-25 mr-1">AC</div>
                 <div class="equal bg-primary w-50">=</div>
             </div>
@@ -134,7 +134,7 @@
                     cell.value = "."
                 }
                 // cell.classList.add("border");
-                cell.classList.add("keys", "p-3", "mb-1","font-weight-bold", "bg-primary", "border", "border-secondary", "text-info");
+                cell.classList.add("keys", "p-3", "mb-1", "font-weight-bold", "bg-primary", "border", "border-secondary", "text-white");
                 operand.appendChild(cell);
 
                 cell.addEventListener("click", keyPressed);
@@ -165,20 +165,29 @@
                         cell.value = "*";
                         break;
                 }
-                cell.classList.add("keys", "p-3", "mb-1","font-weight-bold", "bg-warning", "border", "border-secondary", "text-info");
+                cell.classList.add("keys", "p-3", "mb-1", "font-weight-bold", "bg-warning", "border", "border-secondary", "text-info");
                 operator.appendChild(cell);
 
                 cell.addEventListener("click", keyPressed);
             }
         }
 
+        input.addEventListener("keyup", (ev) => {
+            if ((ev.keyCode > 41 && ev.keyCode < 58)) {
+                expression.textContent = input.value;
+            }
+        });
+
         function keyPressed(ev) {
+            // || (ev.target.value.charCodeAt(0) > 47 && ev.target.value.charCodeAt(0) < 58)
+            // || (ev.keyCode > 41 && ev.keyCode < 58)
             if (!["+", "-", "*", "/"].includes(ev.target.value)) {
                 input.value += ev.target.value;
             } else {
                 input.value = "";
             }
             expression.textContent += ev.target.value;
+            // expression.textContent += input.value;
         }
 
         cancel.addEventListener("click", () => {
@@ -221,9 +230,11 @@
             for (let i in expr) {
                 let token = expr[i];
                 // if operand then push it to postfixExpr
-                if (/\d/.test(token)) {
+                // || (token.charCodeAt() > 47 & token.charCodeAt() < 58)
+                // || (token.charCodeAt(0) > 47 && token.charCodeAt(0) < 58)
+                if (/\d/.test(token) || (token.charCodeAt(0) > 47 && token.charCodeAt(0) < 58)) {
                     postfixExpr += token;
-                } else if(token === ".") {
+                } else if (token === ".") {
                     postfixExpr += token;
                 } else {
                     // when operator begin with a separator " " in postfixExpr                    
@@ -256,7 +267,8 @@
                 let token = expr[i];
                 // if operand then push it onto stack
                 if (/\d/.test(token)) {
-                    stack.push(parseInt(token));
+                    // stack.push(parseInt(token));
+                    stack.push(+(token));
                 } else {
                     // when an operator, pop stack twice, for operations ready
                     let a = stack.pop();
@@ -264,16 +276,27 @@
                     // perform calculations
                     switch (token) {
                         case "+":
-                            stack.push(b + a);
+                            // stack.push(b + a);
+                            stack.push(Number(Math.round(b + a + "e" + 4) + "e-" + 4));
                             break;
                         case "-":
-                            stack.push(b - a);
+                            // stack.push(b - a);
+                            stack.push(Number(Math.round(b - a + "e" + 4) + "e-" + 4));
                             break;
                         case "*":
-                            stack.push(b * a);
+                            // stack.push(b * a);
+                            stack.push(Number(Math.round(b * a + "e" + 4) + "e-" + 4));
                             break;
                         case "/":
-                            stack.push(b / a);
+                            // stack.push(b / a);
+                            if (!a === 0) {
+                                stack.push(Number(Math.round(b / a + "e" + 4) + "e-" + 4));
+                            } else {
+                                alert("Number can not be divided by Zero");
+                                input.value = "No Dividing By Zero"
+                            }
+
+                            // stack.push(Number(Math.round(b / a + "e" + 4) + "e-" + 4));
                             break;
                     }
                 }
@@ -290,3 +313,41 @@
 </body>
 
 </html>
+
+<!--
+        input.addEventListener("keyup", (ev) => {
+            // if((ev.target.value.charCodeAt(0) > 47 || ev.target.value.charCodeAt(0) < 58)) {
+            //     keyPressed(ev);                
+            // }
+            // console.log(ev.target.value, input.value);
+            // expression.textContent = input.value;
+            if ((ev.keyCode > 41 && ev.keyCode < 58)) {
+                // keyPressed(ev);
+                // input.value += ev.target.value;
+                // expression.textContent += ev.target.value;
+                // expression.textContent = input.value;
+                expression.textContent = input.value;
+            }
+            // expression.textContent = input.value;
+        });
+        // input.addEventListener("change", keyPressed)
+
+
+    equal.addEventListener("click", () => {
+            // console.log(expression.textContent);
+            input.value = "";
+            let postfixExpr = infixToPostfixConversion(expression.textContent);
+            solvePostfixExpression(postfixExpr);
+            // let postfixExpr;
+            // if (!expression.textContent) {
+            //     input.value = "";
+            //     postfixExpr = infixToPostfixConversion(expression.textContent);
+            //     // solvePostfixExpression(postfixExpr);
+            // } else {
+            //     // expression.textContent = input.value;
+            //     postfixExpr = infixToPostfixConversion(input.textContent);
+            //     // solvePostfixExpression(postfixExpr);
+            // }
+            // solvePostfixExpression(postfixExpr);
+        });
+-->

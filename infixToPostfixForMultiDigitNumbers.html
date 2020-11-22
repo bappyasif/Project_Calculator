@@ -43,9 +43,9 @@
             for (let token in expr) {
                 let currToken = expr[token];
                 // If operand then add it to output
-                if (/\d/.test(currToken) || token === ".") {
+                if (/\d/.test(currToken) || currToken === ".") {
                     postfixOutput += currToken;
-                } else if(token === ".") {
+                } else if(currToken === ".") {
                     postfixOutput += currToken;
                 }
                 else {
@@ -80,7 +80,8 @@
                 let currToken = expr[idx];
                 // if operand push then it to stack
                 if (/\d/.test(currToken)) {
-                    stack.push(parseInt(currToken));
+                    // stack.push(parseInt(currToken));
+                    stack.push(+(currToken));
                     // if token is empty assign 0 to it to avoid undefined
                 } else if(currToken === "") {
                     currToken = 0;
@@ -89,16 +90,24 @@
                     let b = stack.pop();
                     switch (currToken) {
                         case "+":
-                            stack.push(b + a);
+                            // stack.push(b + a);
+                            // stack.push((b + a).toFixed(4));
+                            stack.push(Number(Math.round(b+a+"e"+4)+"e-"+4));
+                            // stack.push(parseFloat(Math.round((b+a)*100/100)));
+                            // stack.push(parseFloat(Math.round(((b+a)*100)/100)));
                             break;
                         case "-":
-                            stack.push(b - a);
+                            // stack.push(b - a);
+                            // stack.push((b - a).toFixed(4));
+                            stack.push(Number(Math.round(b-a+"e"+4)+"e-"+4));
                             break;
                         case "*":
-                            stack.push(b * a);
+                            // stack.push(b * a);
+                            stack.push(Number(Math.round(b*a+"e"+4)+"e-"+4));
                             break;
                         case "/":
-                            stack.push(b / a);
+                            // stack.push(b / a);
+                            stack.push(Number(Math.round(b/a+"e"+4)+"e-"+4))
                             break;
                     }
                 }
