@@ -95,7 +95,7 @@
         let operator = document.querySelector(".operators");
         let calculation = document.querySelector(".calculation");
         let input = document.querySelector("input");
-        // let equal = document.querySelector(".equal");
+        let equal = document.querySelector(".equal");
         let cancel = document.querySelector(".cancel");
         let clear = document.querySelector(".clear");
         let zero = document.querySelector(".zero");
@@ -145,7 +145,7 @@
                         cell.value = "*";
                         break;
                     case 4:
-                    cell.textContent = "=";
+                        cell.textContent = "=";
                         cell.value = "=";
                         break;
                 }
@@ -158,49 +158,39 @@
 
         function keyPressed(ev) {
             // console.log(ev.target.value);
-            if (!["+", "-", "*", "/"].includes(ev.target.value)) {
+            if (!["+", "-", "*", "/", "="].includes(ev.target.value)) {
                 input.value = ev.target.value;
-                // calculation.textContent = input.value;
-            } else {
                 nums.push(Number(input.value));
-                // calculation.textContent = ;
-                // calculation.textContent = nums[nums.length - 1];
+            } else {
+                input.value = "";
+                let a = nums.pop();
+                // calculation.textContent = a;
+                let b = +calculation.textContent;
+                // calculation.textContent = a;
+                let calc;
+                // console.log(b, ev.target.value);
+                switch (ev.target.value) {
+                    case "+":
+                        calc = a + b;
+                        calculation.textContent = calc;
+                        break;
+                    case "-":
+                        calc = b - a;
+                        calculation.textContent = calc;
+                        break;
+                    case "*":
+                        calc = b * a;
+                        calculation.textContent = calc;
+                        break;
+                    case "/":
+                        calc = b / a;
+                        calculation.textContent = calc;
+                        break;
+                    case "=":
+                        input.value = b;
+                }
             }
-            // let a = Number(calculation.textContent);
-            // let b = Number(input.value);
-            let a = nums.pop();
-            let b = Number(calculation.textContent)
-            let calc;
-            switch (ev.target.value) {
-                case "+":
-                    // input.value = b;
-                    // nums.push(b + a);
-                    input.value = "";
-                    calc = b + a;
-                    calculation.textContent = calc;
-                    break;
-                case "-":
-                    // nums.push(b - a);
-                    calc = b - a;
-                    calculation.textContent = calc;
-                    break;
-                case "*":
-                    // nums.push(b * a);
-                    calc = b * a;
-                    calculation.textContent = calc;
-                    break;
-                case "/":
-                    // nums.push(b / a);
-                    calc = b / a;
-                    calculation.textContent = calc;
-                    break;
-                case "=":
-                    input.value = calculation.textContent;
-                    break;
-            }
-            // calculation.textContent = input.value;
         }
-
 
         operandsTiles(3, 3);
         operatorsTiles(1, 5);
@@ -210,6 +200,58 @@
 </html>
 
 <!--
+
+    function keyPressed(ev) {
+            // console.log(ev.target.value);
+            if (!["+", "-", "*", "/"].includes(ev.target.value)) {
+                input.value = ev.target.value;
+                calculation.textContent = input.value;
+            } else {
+                // input.value = "";
+                nums.push(Number(input.value));
+                // calculation.textContent = ;
+                // calculation.textContent = nums[nums.length - 1];
+            }
+            input.value = "";
+            // let a = Number(calculation.textContent);
+            // let b = Number(input.value);
+            let a = nums.pop();
+            let b = Number(calculation.textContent)
+            // let b = Number(input.value);
+            let calc;
+            switch (ev.target.value) {
+                case "+":
+                    // input.value = b;
+                    // nums.push(b + a);
+                    // input.value = "";
+                    calc = b + a;
+                    calculation.textContent = calc;
+                    // input.value = calc;
+                    break;
+                case "-":
+                    // nums.push(b - a);
+                    // input.value = "";
+                    calc = b - a;
+                    calculation.textContent = calc;
+                    break;
+                case "*":
+                    // nums.push(b * a);
+                    // input.value = "";
+                    calc = b * a;
+                    calculation.textContent = calc;
+                    break;
+                case "/":
+                    // nums.push(b / a);
+                    // input.value = "";
+                    calc = b / a;
+                    calculation.textContent = calc;
+                    break;
+                case "=":
+                    // input.value = calculation.textContent;
+                    break;
+            }
+            // calculation.textContent = input.value;
+        }
 
     function keyPressed(ev) {
             // console.log(ev.target.value);
