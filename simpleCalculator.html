@@ -157,6 +157,62 @@
         let nums = [];
 
         function keyPressed(ev) {
+            if (/\d/.test(ev.target.value)) {
+                input.value += ev.target.value;
+                nums.push(Number(input.value));
+            } else {
+                // nums.push(Number(ev.target.value));
+                // calculation.textContent = input.value;
+                // nums.push(Number(input.value));
+                input.value = ""
+                calculation.textContent = nums[0];
+                let a = +nums.pop();
+                let b = +nums.pop();
+                switch (ev.target.value) {
+                    case "+":
+                        calculation.textContent = a + b;
+                        nums.push(a+b);
+                        break;
+                }
+            }
+            // nums.push(Number(ev.target.value));
+            // let a = +nums.pop();
+            // let b = +nums.pop();
+            // switch (ev.target.value) {
+            //     case "+":
+            //         calculation.textContent = a + b
+            //         break;
+            // }
+
+            // if (["+", "-", "*", "/"].includes(ev.target.value)) {
+            //     let a = nums.pop();
+            //     let b = nums.pop();
+            //     switch (ev.target.value) {
+            //         case "+":
+            //         calculation.textContent = a+b
+            //         break;
+            //     }
+            // }
+
+        }
+
+        function calculate(a, b, op) {
+            switch (op) {
+                case "+":
+                    console.log(a + b);
+            }
+        }
+
+        operandsTiles(3, 3);
+        operatorsTiles(1, 5);
+    </script>
+</body>
+
+</html>
+
+<!--
+
+    function keyPressed(ev) {
             // console.log(ev.target.value);
             if (!["+", "-", "*", "/", "="].includes(ev.target.value)) {
                 input.value = ev.target.value;
@@ -191,15 +247,6 @@
                 }
             }
         }
-
-        operandsTiles(3, 3);
-        operatorsTiles(1, 5);
-    </script>
-</body>
-
-</html>
-
-<!--
 
     function keyPressed(ev) {
             // console.log(ev.target.value);
