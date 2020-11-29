@@ -17,6 +17,9 @@
 
         .calculator {
             text-align: center;
+            width: min-content;
+            background: honeydew;
+            border: darkseagreen 2.2px solid;
         }
 
         .operands,
@@ -49,6 +52,7 @@
         .calculation {
             text-align: right;
             height: 31px;
+            background-color: azure;
         }
 
         .pads {
@@ -81,9 +85,9 @@
                     <div class="extra-keys">
                         <div class="zero btn btn-1 btn-primary">0</div>
                         <div class="decimal btn btn-2 btn-secondary">.</div>
-                        <div class="equal btn btn-3 btn-info">=</div>
+                        <!-- <div class="equal btn btn-3 btn-info">=</div> -->
                         <div class="cancel btn btn-4 btn-warning">C</div>
-                        <div class="clear btn btn-5 btn-danger">AC</div>
+                        <div class="clear btn btn-5 btn-danger w-50">AC</div>
                     </div>
                 </div>
             </div>
@@ -99,6 +103,7 @@
         let cancel = document.querySelector(".cancel");
         let clear = document.querySelector(".clear");
         let zero = document.querySelector(".zero");
+        let decimal = document.querySelector(".decimal");
 
         function operandsTiles(cols, rows) {
             operand.style.setProperty("--operand-cols", cols);
@@ -117,6 +122,7 @@
                 //     cell.textContent = "";
                 //     cell.value = "";
                 // }
+                cell.classList.add("btn","btn-primary");
                 operand.appendChild(cell);
                 cell.addEventListener("click", keyPressed);
             }
@@ -149,14 +155,198 @@
                         cell.value = "=";
                         break;
                 }
+                cell.classList.add("btn","btn-info");
                 operator.appendChild(cell);
                 cell.addEventListener("click", keyPressed);
             }
         }
 
-        let nums = [];
+        zero.addEventListener("click", (ev) => {
+            zero.value = "0";
+            input.value += ev.target.value;
+            calculation.textContent += ev.target.value;
+        });
+
+        decimal.addEventListener("click", (ev) => {
+            decimal.value = ".";
+            // console.log(ev.target.value);
+            input.value += ev.target.value;
+            calculation.textContent += ev.target.value;
+        });
+
+        cancel.addEventListener("click", (ev) => {
+            calculation.textContent = calculation.textContent.substring(0, calculation.textContent.length - 1);
+        });
+
+        clear.addEventListener("click", (ev) => {
+            input.value = "";
+            calculation.textContent = "";
+        });
+
+        // let nums = [];
 
         function keyPressed(ev) {
+            let eq_calc
+            let prev_result;
+            if (!["+", "-", "*", "/", "="].includes(ev.target.value)) {
+                input.value += ev.target.value;
+                calculation.textContent += ev.target.value;
+                // input.value = "";
+            } else {
+                if (ev.target.value === "=") {
+                    let chk = calculation.textContent.split(/[+ |\- | * | /]/);
+                    // console.log(chk);
+                    let op = calculation.textContent[calculation.textContent.search(/[+ |\- | * | /]/)];
+                    console.log(op);
+                    // console.log(chk,chk[0],chk[2], "eq");
+                    let val = calculate(+chk[0],+chk[1],op);
+                    calculation.textContent = val;
+
+                    input.value = "";
+                } else {
+                    input.value += ev.target.value;
+                    input.value = "";
+                    calculation.textContent += ev.target.value;
+                    
+                    eq_calc = checkEquation(ev.target.value);
+                    // console.log(eq_calc[0], "eq here");
+                    if(eq_calc[1]) {
+                        prev_result = calculate(+eq_calc[0], +eq_calc[1], ev.target.value);
+                        // console.log("result", prev_result);
+                        calculation.textContent = prev_result+ev.target.value;
+                    }
+                }
+            }
+        }
+
+        function checkEquation(eq_op) {
+            let eq;
+            if (eq_op === "=") {
+                if (["+", "-", "*", "/"].includes(calculation.textContent)) {
+                    console.log("not vaild");
+                } 
+                else {
+
+                    // eq = calculation.textContent.split(/[+ |\- | * | /]/);
+                    // return eq;
+                    // console.log(eq[0],eq[1]);
+                    // calculate(+eq[0],+eq[1],eq_op);
+                }
+            }
+            eq = calculation.textContent.split(/[+ |\- | * | /]/);
+            return eq;
+        }
+
+        function calculate(a, b, op) {
+            console.log("op here")
+            let value;
+            switch (op) {
+
+                case "+":
+                    console.log("calc here")
+                    console.log(a + b);
+                    value = a+b;
+                    // calculation.textContent += a+b;
+                    // calculation.textContent = sum;
+                    // return sum;
+                    break;
+                case "-":
+                value = a-b;
+                break;
+                case "*":
+                value = a * b;
+                break;
+                case "/":
+                value = a / b;
+                break;
+                case "=":
+                return value;
+            }
+            return value;
+        }
+
+        operandsTiles(3, 3);
+        operatorsTiles(1, 5);
+        (function() {
+            input.value = "";
+        })();
+    </script>
+</body>
+
+</html>
+
+<!--
+
+            function keyPressed(ev) {
+            let eq_calc
+            let prev_result;
+            if (!["+", "-", "*", "/", "="].includes(ev.target.value)) {
+                input.value += ev.target.value;
+                calculation.textContent += ev.target.value;
+                // input.value = "";
+            } else {
+                // calculation.textContent += input.value;
+                if (ev.target.value === "=") {
+                    // checkEquation(ev.target.value);
+                    // eq_calc = checkEquation(ev.target.value);
+                    // console.log(eq_calc[0], eq_calc[1], "here!!");
+                    // prev_result = calculate(eq_calc[0], eq_calc[1]);
+                    // console.log(prev_result, "equal op");
+                    // calculation.textContent = prev_result;
+
+                    // forEqual(calculation.textContent);
+                    let chk = calculation.textContent.split("");
+                    // console.log(chk,chk.search(/[+ |\- | * | /]/));
+                    // console.log(calculation.textContent.search(/[+ |\- | * | /]/));
+
+                    let op = calculation.textContent[calculation.textContent.search(/[+ |\- | * | /]/)];
+                    // console.log(chk);
+                    console.log(chk,chk[0],chk[2], "eq");
+                    let val = calculate(+chk[0],+chk[2],op);
+                    calculation.textContent = val;
+
+                    input.value = "";
+                    // forEqual
+                } else {
+                    input.value += ev.target.value;
+                    input.value = "";
+                    calculation.textContent += ev.target.value;
+                    
+                    eq_calc = checkEquation(ev.target.value);
+                    // console.log(eq_calc[0], "eq here");
+                    if(eq_calc[1]) {
+                        prev_result = calculate(+eq_calc[0], +eq_calc[1], ev.target.value);
+                        console.log("result", prev_result);
+                        calculation.textContent = prev_result+ev.target.value;
+                        // calculation.textContent = prev_result;
+                    }
+                    // calculation.textContent = prev_result;
+                }
+                // calculation.textContent += prev_result;
+
+                // let eq_calc = checkEquation(ev.target.value);
+                // calculate(eq_calc[0], eq_calc[1], ev.target.value);
+            }
+            // if (ev.target.value === "=") {
+            //     if (["+", "-", "*", "/"].includes(calculation.textContent)) {
+            //         console.log("not vaild");
+            //     } else {
+            //         let eq = calculation.textContent.split("+|-");
+            //         console.log(eq);
+            //     }
+            // }
+        }
+
+        // function forEqual(eqn) {
+        //     let eq;
+        //     let op = eqn.find(["+","-","*","/"]);
+        //     console.log(op);
+        //     // eq = calculation.textContent.split(/[+ |\- | * | /]/);
+        //     eq = eqn.split(/[+ |\- | * | /]/);
+        //     // calculateEqual(eq[0],eq[1]);
+        // }
+
+    function keyPressed(ev) {
             if (/\d/.test(ev.target.value)) {
                 input.value += ev.target.value;
                 nums.push(Number(input.value));
@@ -195,22 +385,6 @@
             // }
 
         }
-
-        function calculate(a, b, op) {
-            switch (op) {
-                case "+":
-                    console.log(a + b);
-            }
-        }
-
-        operandsTiles(3, 3);
-        operatorsTiles(1, 5);
-    </script>
-</body>
-
-</html>
-
-<!--
 
     function keyPressed(ev) {
             // console.log(ev.target.value);
